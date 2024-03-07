@@ -19,7 +19,7 @@ seed= c(11,2,1,1,2) # random seeds to obtain the same images as in the Schmidt e
 
 dimxy = 250 # size of main window (in µm)
 
-props = c(Acidobacteria = 0.21,Actinobacteria = 0.04, Proteobacteria = 0.34, Firmicutes=0.01, Nitrospirae = 0.03, Other = 0.09,  Bacteroidetes = 0.1, Chloroflexi = 0.02,  Thaumarcheota = 0.02, Verrucomicrobia = 0.14) # Proportion of microbial groups in simulations. Must add to 1. 
+props_phylum = c(Acidobacteria = 0.21,Actinobacteria = 0.04, Proteobacteria = 0.34, Firmicutes=0.01, Nitrospirae = 0.03, Other = 0.09,  Bacteroidetes = 0.1, Chloroflexi = 0.02,  Thaumarcheota = 0.02, Verrucomicrobia = 0.14) # Proportion of microbial groups in simulations. Must add to 1. 
 
 cell_diameter = 0.75 # microbial cell diameter
 
@@ -38,7 +38,7 @@ for (s in seq_along(density)) {
 
   # Create parameter list for make_community function
   parms = list(dimxy = dimxy,
-               props = props,
+               props_phylum = props_phylum,
                prop_types = prop_types,
                cell_density = density[s]/(100*100),
                cell_diameter = cell_diameter,

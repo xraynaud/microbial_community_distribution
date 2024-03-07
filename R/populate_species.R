@@ -1,7 +1,28 @@
+#' Add phylum marks to microbila community made with `make_community()`
+#' @description This function adds a mark to each point: the group (phylum) to which it belong.
+#' @details
+#' Depending on the total number of cells and the proportion in each group, we may not obtain round numbers. If the total number of cells does not allow to have integer groups, the function samples the groups with given proportion. This means that realized proportions can deviate from the given proportions. This is especially the case when cell density is low.
+#' In the case of colonies, cells within a colonie are assigned to the same phylum
+#' @param X a simulated community produced by `make_community()`
+#' @param props a named vector of proportions for the different phyla. Must add to 1.
+#' @examples
+#' parms = list(dimxy = 100,
+#'              prop_types = c(40,50,10),
+#'              cell_density = 0.0002,
+#'              cell_diameter = 1,
+#'              microcolonies_size_range = c(8,10),
+#'              microcolonies_diameter = 10,
+#'              microcolonies_distribution = "Matern",
+#'              filamentous_size_range = c(8,10)
+#'              )
+#' populate_species(make_community(parms) , c(phylum1 = 0.20,
+#'                                            phylum2 = 0.40, 
+#'                                            phylum3 = 0.10,
+#'                                            phylum4 = 0.25, 
+#'                                            phylum5 = 0.05)
+#'                                            )
+
 populate_species = function(X, props) {
-  # This function adds a mark to each point: the group (phylum) to which it belong .
-  # Depending on the total number of cells and the proportion in each group, we may not obtain round numbers. The if is here to deal with this problem. If  cell_number*props do not give integers, we SAMPLE the groups with given proportion. THIS MEANS THAT THE PROPORTION IN THIS SAMPLE CAN DEVIATES FROM YOUR PROPORTIONS (especially when cell density is low)
-  # cells within a colonie are assigned to the same phyla
   
   # We create a vector of names with the correct proportions  
   phylum = rep(names(props), spatstat.geom::npoints(X)*props) #This create a vector of names according to given proportions
