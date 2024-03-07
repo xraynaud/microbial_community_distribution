@@ -1,3 +1,7 @@
+#This is the code to create 2D microbial communities and reproduce figures published in Schmidt et al paper. See comments in .R files for details.
+# Please not that calculating the %HSA covered can tale a long time for dense communities. 
+# Comment line 76 and 109 if this info is not needed. 
+
 library(spatstat) 
 library(dplyr)
 library(pals) # This is to have nice colour scales
@@ -10,8 +14,8 @@ source("R/populate_species.R")
 source("R/make_community.R")
 
 #Parameters for simulations
-density = c(650, 649, 577, 1313, 493, 216) # cell density in images
-seed= c(11, 11,2,1,1,2) # random seeds to obtain the same images as in the Schmidt et al
+density = c(649, 577, 1313, 493, 216) # cell density in images
+seed= c(11,2,1,1,2) # random seeds to obtain the same images as in the Schmidt et al
 
 dimxy = 250 # size of main window (in µm)
 
@@ -24,12 +28,14 @@ prop_types = c(0.55, 0.4, 0.05) # proportions of cells in microcolonies, individ
 # Microcolonies
 microcolonies_size_range = c(3,8) # cell number range in microcolonies
 microcolonies_diameter = 10 # microcolony diameter
+microcolonies_distribution = "NeymanScott" # Spatial distribution for microcolonies
 filamentous_size_range = c(3,8) # cell number range in filamentous colonies
 
 for (s in seq_along(density)) { 
+  
   print(paste("Image", s))
   set.seed(seed[s])
-  
+
   # Create parameter list for make_community function
   parms = list(dimxy = dimxy,
                props = props,
@@ -38,6 +44,7 @@ for (s in seq_along(density)) {
                cell_diameter = cell_diameter,
                microcolonies_size_range = microcolonies_size_range,
                microcolonies_diameter = microcolonies_diameter,
+               microcolonies_distribution = microcolonies_distribution,
                filamentous_size_range = filamentous_size_range
   )
   
@@ -69,7 +76,7 @@ for (s in seq_along(density)) {
     coord_fixed() + 
     theme_void() + 
     theme(panel.background = element_rect(), legend.position = "bottom") +
-    labs(title = paste(cells$n, "cells in 250x250 µm window"), subtitle = paste0(paste0(format(area.owin(discs(cells, cell_diameter/2))*100/area.owin(as.owin(cells)), digits = 2, nsmall=2),"% of HSA covered\n"), paste0(format(mean(rowSums(pairdist(cells) < 20)-1),digits = 1,nsmall =1), " neighbouring cells"))) +
+    labs(tag = "A", title = paste(cells$n, "cells in 250x250 µm window"), subtitle = paste0(paste0(format(area.owin(discs(cells, cell_diameter/2))*100/area.owin(as.owin(cells)), digits = 2, nsmall=2),"% of HSA covered\n"), paste0(format(mean(rowSums(pairdist(cells) < 20)-1),digits = 1,nsmall =1), " neighbouring cells"))) +
     NULL
 
   ## Subplots
@@ -102,7 +109,7 @@ for (s in seq_along(density)) {
       coord_fixed() + 
       theme_void() + 
       theme(panel.background = element_rect(), legend.position = "right" ) +#
-      labs(title = paste(X$n, "cells in 100x100 µm window"), subtitle = paste0(paste0(format(area.owin(discs(X, parms$cell_diameter/2))*100/area.owin(as.owin(X)), digits = 2, nsmall=2),"% of HSA covered\n"), paste0(format(mean(rowSums(pairdist(X) < 20)-1),digits = 2,nsmall =1)), " neighbouring cells")) +
+      labs(tag = c("B","C")[z], title = paste(X$n, "cells in 100x100 µm window"), subtitle = paste0(paste0(format(area.owin(discs(X, parms$cell_diameter/2))*100/area.owin(as.owin(X)), digits = 2, nsmall=2),"% of HSA covered\n"), paste0(format(mean(rowSums(pairdist(X) < 20)-1),digits = 2,nsmall =1)), " neighbouring cells")) +
       NULL
   }
   

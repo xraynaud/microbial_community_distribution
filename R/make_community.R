@@ -4,15 +4,15 @@ make_community = function(parameters) {
     cell_number = cell_density*dimxy^2
     microcolonies_number = cell_number*prop_types[1]/mean(microcolonies_size_range)
     
-    microcolonies = spatstat.random::rMatClust(microcolonies_number/dimxy^2, microcolonies_diameter/2,mean(microcolonies_size_range), win=spatstat.geom::owin(c(0,dimxy), c(0,dimxy)), saveparents = T)
-    
-    # nclust <- function(x0, y0, radius, nmin, nmax) {
-    #   off = spatstat.random::runifdisc(floor(runif(1, nmin, nmax+1)), radius, centre=c(x0, y0))
-    # }
-    # 
-    # microcolonies = spatstat.random::rNeymanScott(microcolonies_number/dimxy^2,0.2, nclust, radius = microcolonies_diameter/2,nmin = microcolonies_size_range[1], nmax = microcolonies_size_range[2], win=spatstat.geom::owin(c(0,dimxy), c(0,dimxy)), saveparents = T)
-    
-    #microcolonies = spatstat.random::rThomas(microcolonies_number/dimxy^2, microcolonies_diameter/4, mean(microcolonies_size_range), win=spatstat.geom::owin(c(0,dimxy), c(0,dimxy)), saveparents = T)
+    microcolonies = switch(microcolonies_distribution,
+           NeymanScott = {
+            nclust <- function(x0, y0, radius, nmin, nmax) {
+              off = spatstat.random::runifdisc(floor(runif(1, nmin, nmax+1)), radius, centre=c(x0, y0))
+            }
+            spatstat.random::rNeymanScott(microcolonies_number/dimxy^2,0.2, nclust, radius = microcolonies_diameter/2,nmin = microcolonies_size_range[1], nmax = microcolonies_size_range[2], win=spatstat.geom::owin(c(0,dimxy), c(0,dimxy)), saveparents = T)}, 
+           Matern = spatstat.random::rMatClust(microcolonies_number/dimxy^2, microcolonies_diameter/2,mean(microcolonies_size_range), win=spatstat.geom::owin(c(0,dimxy), c(0,dimxy)), saveparents = T),
+           Thomas = spatstat.random::rThomas(microcolonies_number/dimxy^2, microcolonies_diameter/4, mean(microcolonies_size_range), win=spatstat.geom::owin(c(0,dimxy), c(0,dimxy)), saveparents = T)
+    )
     
     spatstat.geom::marks(microcolonies) = data.frame(type = "microcolony", phylum = attr(microcolonies,"parentid"))
     
