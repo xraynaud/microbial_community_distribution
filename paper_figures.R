@@ -9,9 +9,7 @@ library(ggplot2)
 library(ggforce) # Needed to plot interaction distance discs in subplots
 library(patchwork)
 
-
-source("R/populate_species.R")
-source("R/make_community.R")
+library(MicrobialCommunityDistribution)
 
 #Parameters for simulations
 density = c(649, 577, 1313, 493, 216) # cell density in images

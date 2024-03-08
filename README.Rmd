@@ -1,0 +1,51 @@
+---
+output: github_document
+---
+
+# MicrobialCommunityDistribution
+
+This is the code to create 2D microbial communities and reproduce figures published in Schmidt et al paper. 
+
+```{r illustration, echo = F, warning = F, message=F}
+library(ggplot2)
+library(tidyr)
+library(dplyr)
+library(spatstat)
+library(MicrobialCommunityDistribution)
+
+ parms = list(dimxy = 100,
+               props_phylum = c(Acidobacteria = 0.21,Actinobacteria = 0.04, Proteobacteria = 0.34, Firmicutes=0.01, Nitrospirae = 0.03, Other = 0.09,  Bacteroidetes = 0.1, Chloroflexi = 0.02,  Thaumarcheota = 0.02, Verrucomicrobia = 0.14) ,
+               prop_types = c(0.55, 0.4, 0.05),
+               cell_density = 0.05,
+               cell_diameter = 0.75,
+               microcolonies_size_range = c(8,10),
+               microcolonies_diameter = 10,
+               microcolonies_distribution = "Matern",
+               filamentous_size_range = c(8,10))
+
+ 
+  cells = populate_species(make_community(parms), parms$props_phylum)
+ 
+  colors = pals::kelly(length(parms$props)+1)[-1] #here we define the colours for each groups (the [-1] is because the first colour of this palette is white...)
+  legend_labels = cbind(as.data.frame(table(marks(cells)$phylum)/cells$n), colour = colors[1:length(unique(marks(cells)$phylum))]) %>% arrange(desc(Freq)) %>% mutate(name = paste0(Var1, " (",round(100*Freq),"%)"))
+  
+ ggplot(as.data.frame(cells),aes(x = x, y=y, colour= phylum)) + 
+    geom_point( size  = parms$cell_diameter) + 
+    scale_x_continuous(expand=c(0,0), limits= c(0,parms$dimxy)) +  
+    scale_y_continuous(expand=c(0,0), limits= c(0,parms$dimxy)) +
+    scale_color_manual(values = with(legend_labels, setNames(colour, Var1)), breaks = legend_labels$Var1, name = NULL, labels = with(legend_labels, setNames(name, Var1))) + 
+    scale_alpha_discrete(range = c(1,1), guide = "none") + 
+    coord_fixed() + 
+    theme_void() + 
+    theme(panel.background = element_rect(), legend.position = "none")
+
+```
+
+## Usage
+
+To use the function, simply install the package with: 
+```
+devtools::install_github("xraynaud/microbial_community_distribution")
+```
+
+To rebuild figures of the paper, download and source the file `paper_figures.R`. 
