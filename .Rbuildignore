@@ -1,0 +1,7 @@
+^paper_figures\.R$
+^microbial_community_distribution\.Rproj$
+^\.Rproj/*$
+^\.gitignore$
+^\.Rhistory$
+^LICENSE\.md$
+^\.Rproj\.user$
