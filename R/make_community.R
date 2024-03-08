@@ -31,7 +31,8 @@ make_community = function(parameters) {
     cell_number = cell_density*dimxy^2
     microcolonies_number = cell_number*prop_types[1]/mean(microcolonies_size_range)
     
-    microcolonies = switch(microcolonies_distribution,
+    microcolonies = 
+      switch(microcolonies_distribution,
            NeymanScott = {
             nclust <- function(x0, y0, radius, nmin, nmax) {
               off = spatstat.random::runifdisc(floor(runif(1, nmin, nmax+1)), radius, centre=c(x0, y0))

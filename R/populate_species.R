@@ -1,5 +1,5 @@
-#' Add phylum marks to microbila community made with `make_community()`
-#' @description This function adds a mark to each point: the group (phylum) to which it belong.
+#' Add phylum marks to microbial community made with `make_community`
+#' @description The function `populate_species` adds a mark to each point: the group (phylum) to which it belong.
 #' @details
 #' Depending on the total number of cells and the proportion in each group, we may not obtain round numbers. If the total number of cells does not allow to have integer groups, the function samples the groups with given proportion. This means that realized proportions can deviate from the given proportions. This is especially the case when cell density is low.
 #' In the case of colonies, cells within a colonie are assigned to the same phylum
