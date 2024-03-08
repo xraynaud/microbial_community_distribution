@@ -4,13 +4,13 @@
 #' @details
 #' The `parameters` list should contain:
 #' \describe{
-#' \item{`dimxy`} {the dimension of the square window} 
-#' \item{`prop_types`} {the proportions of microcolonies, filamentous and isolated cells}
-#' \item{`cell_diameter`} {the diameters of cells (identical for all groups)}
-#' \item{`microcolonies_size_range`} {the range for cell numbers in microcolonies} 
-#' \item{`microcolonies_diameter`} {the range for microcolony diameter}
-#' \item{`microcolonies_distribution`} {the type of spatial distribution for microcolonies. Choose between *NeymanScott*, *Matern* or *Thomas*}
-#' \item{`filamentous_size_range`} {the the range for cell numbers in filamentous colonies} 
+#' \item{`dimxy`}{the dimension of the square window} 
+#' \item{`prop_types`}{the proportions of microcolonies, filamentous and isolated cells}
+#' \item{`cell_diameter`}{the diameters of cells (identical for all groups)}
+#' \item{`microcolonies_size_range`}{the range for cell numbers in microcolonies} 
+#' \item{`microcolonies_diameter`}{the range for microcolony diameter}
+#' \item{`microcolonies_distribution`}{the type of spatial distribution for microcolonies. Choose between *NeymanScott*, *Matern* or *Thomas*}
+#' \item{`filamentous_size_range`}{the the range for cell numbers in filamentous colonies} 
 #' }
 #' @return a marked point process with type (isolated, microcolony, filamentous) and parent cluster id (column phylum)
 #' @examples
@@ -22,9 +22,9 @@
 #'              microcolonies_diameter = 10,
 #'              microcolonies_distribution = "Matern",
 #'              filamentous_size_range = c(8,10)
-#'              )
+#'             )
 #' make_community(parms)
-
+#' @export
 make_community = function(parameters) {
   
   cells = with(parameters,{

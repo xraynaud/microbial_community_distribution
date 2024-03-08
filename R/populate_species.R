@@ -14,20 +14,20 @@
 #'              microcolonies_diameter = 10,
 #'              microcolonies_distribution = "Matern",
 #'              filamentous_size_range = c(8,10)
-#'              )
+#'             )
 #' populate_species(make_community(parms) , c(phylum1 = 0.20,
 #'                                            phylum2 = 0.40, 
 #'                                            phylum3 = 0.10,
 #'                                            phylum4 = 0.25, 
 #'                                            phylum5 = 0.05)
 #'                                            )
-
+#' @export
 populate_species = function(X, props) {
   
   # We create a vector of names with the correct proportions  
   phylum = rep(names(props), spatstat.geom::npoints(X)*props) #This create a vector of names according to given proportions
   if (spatstat.geom::npoints(X) - length(phylum) >0) {
-    phylum = factor(c(phylum, sample(names(props), size = spatstat.geom::npoints(X) - length(phylum), p=props, replace=T)), levels = names(props)) # If the proportions*ncells does not sum up to the total number of cells we resample the proportions to have a complete set.
+    phylum = factor(c(phylum, sample(names(props), size = spatstat.geom::npoints(X) - length(phylum), prob=props, replace=T)), levels = names(props)) # If the proportions*ncells does not sum up to the total number of cells we resample the proportions to have a complete set.
   }
   
   # clusters
@@ -36,7 +36,7 @@ populate_species = function(X, props) {
   retry = T
   while(retry) {
     retry = F
-    microcol_phylum = factor(rep(sample(names(props), p=props, size = length(unique(ncolonies)), replace = T), table(ncolonies)), levels = names(props))
+    microcol_phylum = factor(rep(sample(names(props), prob=props, size = length(unique(ncolonies)), replace = T), table(ncolonies)), levels = names(props))
     if (any(table(phylum)-table(microcol_phylum)<0) ) {
       retry = T
     }
