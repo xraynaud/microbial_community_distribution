@@ -48,4 +48,7 @@ To use the function, simply install the package with:
 devtools::install_github("xraynaud/microbial_community_distribution")
 ```
 
-To rebuild figures of the paper, download and source the file `paper_figures.R`. 
+To rebuild figures of the paper, source the file `paper_figures.R`.
+```
+source("https://raw.githubusercontent.com/xraynaud/microbial_community_distribution/main/paper_figures.R")
+```

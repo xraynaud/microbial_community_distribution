@@ -12,12 +12,12 @@ library(patchwork)
 library(MicrobialCommunityDistribution)
 
 #Parameters for simulations
-density = c(649, 577, 1313, 493, 216) # cell density in images
+density = c(649, 1313,216, 577,493) # cell density in images
 seed= c(11,2,1,1,2) # random seeds to obtain the same images as in the Schmidt et al
 
 dimxy = 250 # size of main window (in µm)
 
-props_phylum = c(Acidobacteria = 0.21,Actinobacteria = 0.04, Proteobacteria = 0.34, Firmicutes=0.01, Nitrospirae = 0.03, Other = 0.09,  Bacteroidetes = 0.1, Chloroflexi = 0.02,  Thaumarcheota = 0.02, Verrucomicrobia = 0.14) # Proportion of microbial groups in simulations. Must add to 1. 
+props_phylum = c(Acidobacteriota = 0.21, Actinobacteriota = 0.04, Proteobacteria = 0.34, Firmicutes=0.01, Nitrospirota = 0.03, Other = 0.09,  Bacteroidota = 0.1, Chloroflexi = 0.02,  Nitrososphaerales = 0.02, Verrucomicrobiota = 0.14) # Proportion of microbial groups in simulations. Must add to 1. 
 
 cell_diameter = 0.75 # microbial cell diameter
 
@@ -29,7 +29,7 @@ microcolonies_diameter = 10 # microcolony diameter
 microcolonies_distribution = "NeymanScott" # Spatial distribution for microcolonies
 filamentous_size_range = c(3,8) # cell number range in filamentous colonies
 
-for (s in seq_along(density)) { 
+for (s in seq_along(density)) { #
   
   print(paste("Image", s))
   set.seed(seed[s])
@@ -58,23 +58,23 @@ for (s in seq_along(density)) {
   
   ## Plot colors
   colors = pals::kelly(length(parms$props)+1)[-1] #here we define the colours for each groups (the [-1] is because the first colour of this palette is white...)
-  legend_labels = cbind(as.data.frame(table(marks(cells)$phylum)/cells$n), colour = colors[1:length(unique(marks(cells)$phylum))]) %>% arrange(desc(Freq)) %>% mutate(name = paste0(Var1, " (",round(100*Freq),"%)"))
+  legend_labels = cbind(as.data.frame(table(marks(cells)$phylum)[c(1:5,7,8,9,6,10)]/cells$n), colour = colors[1:length(unique(marks(cells)$phylum))]) %>% arrange(desc(Freq)) %>% mutate(name = paste0(Var1, " (",round(100*Freq),"%)"))
   
   ## Main plot
   global = ggplot(as.data.frame(cells),aes(x = x, y=y, colour= phylum)) + 
     geom_point( size  = parms$cell_diameter) + 
     annotate("segment", x = posx, y = posy, xend = posx+length, yend = posy, linewidth = 2) + 
     annotate("text", x = posx + length/2, posy -5, label = paste(length, "µm")) + 
-    annotate("rect", xmin = zones$x, ymin = zones$y, xmax = zones$x+zones$size, ymax = zones$y+zones$size, fill=NA, colour = "black")+
+    annotate("rect", xmin = zones$x, ymin = zones$y, xmax = zones$x+zones$size, ymax = zones$y+zones$size, fill=NA, colour = "black", linewidth = 1)+
     scale_x_continuous(expand=c(0,0), limits= c(0,parms$dimxy)) +  
     scale_y_continuous(expand=c(0,0), limits= c(0,parms$dimxy)) +
     scale_color_manual(values = with(legend_labels, setNames(colour, Var1)), breaks = legend_labels$Var1, name = NULL, labels = with(legend_labels, setNames(name, Var1))) + 
     scale_alpha_discrete(range = c(1,1), guide = "none") + 
-    guides(color = guide_legend(override.aes = list(size = 2), nrow = 3)) +
+    guides(color = guide_legend(override.aes = list(size = 2), ncol = 3)) +
     coord_fixed() + 
     theme_void() + 
-    theme(panel.background = element_rect(), legend.position = "bottom") +
-    labs(tag = "A", title = paste(cells$n, "cells in 250x250 µm window"), subtitle = paste0(paste0(format(area.owin(discs(cells, cell_diameter/2))*100/area.owin(as.owin(cells)), digits = 2, nsmall=2),"% of HSA covered\n"), paste0(format(mean(rowSums(pairdist(cells) < 20)-1),digits = 1,nsmall =1), " neighbouring cells"))) +
+    theme(panel.background = element_rect(), panel.border = element_rect(colour = "black",linewidth = 1, fill = NA),legend.position = "bottom") +
+    labs(title = paste("A. ",cells$n, "cells in 250x250 µm window"), subtitle = paste0(paste0(format(area.owin(discs(cells, cell_diameter/2))*100/area.owin(as.owin(cells)), digits = 2, nsmall=2),"% of HSA covered\n"), paste0(format(mean(rowSums(pairdist(cells) < 20)-1),digits = 1,nsmall =1), " neighbouring cells"))) +
     NULL
 
   ## Subplots
@@ -96,24 +96,27 @@ for (s in seq_along(density)) {
     
     subplots[[z]] = ggplot(as.data.frame(X),aes(x = x, y=y, colour= phylum)) + 
       geom_point(aes(alpha = inrange), size  = parms$cell_diameter) + 
-      geom_circle(data = as.data.frame(cell_ref), aes(x0= x, y0 = y, r = radius), colour = "black", linetype = "dashed", size = 0.1)+
+      geom_circle(data = as.data.frame(cell_ref), aes(x0= x, y0 = y, r = radius), colour = "black", linetype = "dashed", size = 0.5)+
       annotate("segment", x = posx, y = posy, xend = posx+length, yend = posy, linewidth = 1) + 
       annotate("text", x = posx + length/2, posy -3, label = paste(length, "µm")) + 
       scale_x_continuous(expand=c(0,0)) +  
       scale_y_continuous(expand=c(0,0)) +
       scale_color_manual(values = with(legend_labels, setNames(colour, Var1)), breaks = legend_labels$Var1, name = NULL, labels = with(legend_labels, setNames(name, Var1))) + 
       scale_alpha_discrete(range = c(0.5,1), guide = "none") + 
-      guides(color = guide_legend(override.aes = list(size = 2))) +
+      guides(color = guide_legend(override.aes = list(size = 2), ncol = 1)) +
       coord_fixed() + 
       theme_void() + 
-      theme(panel.background = element_rect(), legend.position = "right" ) +#
-      labs(tag = c("B","C")[z], title = paste(X$n, "cells in 100x100 µm window"), subtitle = paste0(paste0(format(area.owin(discs(X, parms$cell_diameter/2))*100/area.owin(as.owin(X)), digits = 2, nsmall=2),"% of HSA covered\n"), paste0(format(mean(rowSums(pairdist(X) < 20)-1),digits = 2,nsmall =1)), " neighbouring cells")) +
+      theme(panel.background = element_rect(),panel.border = element_rect(colour = "black",linewidth = 1, fill = NA), legend.position = "right" ) +#
+      labs(title = paste(c("B. ","C. ")[z],X$n, "cells in 100x100 µm window"), subtitle = paste0(paste0(format(area.owin(discs(X, parms$cell_diameter/2))*100/area.owin(as.owin(X)), digits = 2, nsmall=2),"% of HSA covered\n"), paste0(format(mean(rowSums(pairdist(X) < 20)-1),digits = 2,nsmall =1)), " neighbouring cells")) +
       NULL
   }
   
   ## Make Figure
-  left_panel = (subplots[[1]]+ theme(plot.margin = unit(c(10,0,20,0), "pt")))/ (subplots[[2]] + theme(plot.margin = unit(c(20,0,0,0), "pt")))
-  (global + theme(plot.margin = unit(c(0,0,0,0), "pt"), plot.subtitle = element_text(margin = unit(c(0,0,-15,0), "pt")), plot.title = element_text(margin = unit(c(0,0,-15,0), "pt")))) + (left_panel + theme(plot.margin = unit(c(20,25,20,25), "pt")))+ plot_layout(widths = c(250, 100))
-  ggsave(paste0(density[s],".pdf"), width = 11, height=8.27)
+#  left_panel = (subplots[[1]]+ theme(plot.margin = unit(c(10,0,20,0), "pt")))/ (subplots[[2]] + theme(plot.margin = unit(c(20,0,0,0), "pt")))
+#  (global + theme(plot.margin = unit(c(0,0,0,0), "pt"), plot.subtitle = element_text(margin = unit(c(0,0,-15,0), "pt")), plot.title = element_text(margin = unit(c(0,0,-15,0), "pt")))) + (left_panel + theme(plot.margin = unit(c(20,25,20,25), "pt")))+ plot_layout(widths = c(250, 100))
+    (global + theme(plot.margin = unit(c(0,0,0,20), "pt"))) + ((subplots[[1]]+ theme(plot.margin = unit(c(0,0,10,0), "pt")))/ (subplots[[2]] + theme(plot.margin = unit(c(10,0,0,0), "pt")))) + plot_layout(width = unit(c(1, -1), c("null", "null")))#+  plot_annotation(tag_levels = "A") 
+      ggsave(paste0("images/",density[s],".pdf"), width = 14, height=8)
+  
+  
 }
 
